@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 Joke Game - Play Now!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            background: #f0f0f0;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+
+        .score-item {
+            flex: 1;
+        }
+
+        .score-label {
+            color: #999;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .game-mode {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            padding: 15px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mode-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .mode-btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        .joke-container {
+            background: #f9f9f9;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 25px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .joke-setup {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .joke-punchline {
+            font-size: 1.4em;
+            color: #667eea;
+            font-weight: bold;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px dashed #ddd;
+            display: none;
+        }
+
+        .joke-punchline.show {
+            display: block;
+        }
+
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reveal {
+            background: #667eea;
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .btn-reveal:hover {
+            background: #764ba2;
+        }
+
+        .btn-funny {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-funny:hover {
+            background: #45a049;
+        }
+
+        .btn-not-funny {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-not-funny:hover {
+            background: #da190b;
+        }
+
+        .btn-next {
+            background: #667eea;
+            color: white;
+            grid-column: 1 / -1;
+        }
+
+        .btn-next:hover {
+            background: #764ba2;
+        }
+
+        .feedback {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .streak {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .game-over {
+            display: none;
+            text-align: center;
+        }
+
+        .game-over.show {
+            display: block;
+        }
+
+        .final-score {
+            font-size: 3em;
+            color: #667eea;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .share-btn {
+            background: #2196F3;
+            color: white;
+            padding: 12px 25px;
+            margin-top: 20px;
+            font-size: 1em;
+        }
+
+        .share-btn:hover {
+            background: #0b7dda;
+        }
+
+        .info {
+            background: #e3f2fd;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: left;
+            color: #333;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+
+            .score-board {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .game-mode {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Joke Game</h1>
+        <p class="subtitle">Rate jokes and build your streak!</p>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Streak</div>
+                <div class="score-value" id="streak">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Rated</div>
+                <div class="score-value" id="rated">0</div>
+            </div>
+        </div>
+
+        <div class="game-mode">
+            <button class="mode-btn active" onclick="setGameMode('rating')">⭐ Rating Mode</button>
+            <button class="mode-btn" onclick="setGameMode('guess')">🤔 Guess Mode</button>
+        </div>
+
+        <div id="game-content">
+            <div class="joke-container">
+                <div class="joke-setup" id="jokeSetup">Loading joke...</div>
+                <div class="joke-punchline" id="jokePunchline"></div>
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <div id="rating-mode" class="button-group">
+                <button class="btn-funny" onclick="rateJoke('funny')">😂 Funny!</button>
+                <button class="btn-not-funny" onclick="rateJoke('notfunny')">😕 Not Funny</button>
+            </div>
+
+            <div id="guess-mode" class="button-group" style="display: none;">
+                <button class="btn-reveal" onclick="revealPunchline()">Reveal Punchline</button>
+            </div>
+
+            <button class="btn-next" onclick="getNextJoke()">➡️ Next Joke</button>
+        </div>
+
+        <div id="game-over" class="game-over">
+            <h2>Game Over! 🎉</h2>
+            <div class="final-score" id="finalScore">0</div>
+            <p>Great job! You rated <span id="finalRated">0</span> jokes!</p>
+            <button class="btn-next" onclick="location.reload()">Play Again</button>
+        </div>
+
+        <div class="info">
+            <strong>📱 Share with friends:</strong> Send them this link and challenge them to beat your score!
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'https://official-joke-api.appspot.com/random_joke';
+        
+        let gameState = {
+            score: 0,
+            streak: 0,
+            rated: 0,
+            currentJoke: null,
+            gameMode: 'rating',
+            jokeRevealed: false,
+            jokesThisSession: 0,
+            maxJokes: 10
+        };
+
+        async function getNextJoke() {
+            try {
+                document.getElementById('feedback').innerHTML = '<span class="loading">Loading joke...</span>';
+                
+                const response = await fetch(API_URL);
+                const joke = await response.json();
+                
+                gameState.currentJoke = joke;
+                gameState.jokeRevealed = false;
+                
+                displayJoke();
+                document.getElementById('feedback').innerHTML = '';
+                
+            } catch (error) {
+                console.error('Error fetching joke:', error);
+                document.getElementById('jokeSetup').innerHTML = 'Failed to load joke. Please try again!';
+            }
+        }
+
+        function displayJoke() {
+            const { setup, punchline } = gameState.currentJoke;
+            
+            document.getElementById('jokeSetup').innerHTML = setup;
+            document.getElementById('jokePunchline').innerHTML = punchline;
+            document.getElementById('jokePunchline').classList.remove('show');
+        }
+
+        function revealPunchline() {
+            document.getElementById('jokePunchline').classList.add('show');
+            gameState.jokeRevealed = true;
+        }
+
+        function rateJoke(rating) {
+            gameState.rated++;
+            
+            if (rating === 'funny') {
+                gameState.score += 10;
+                gameState.streak++;
+                document.getElementById('feedback').innerHTML = '😂 <span class="streak">+10 Points! Streak: ' + gameState.streak + '</span>';
+            } else {
+                gameState.streak = 0;
+                document.getElementById('feedback').innerHTML = '👍 Noted!';
+            }
+            
+            updateScoreboard();
+            
+            // Check if reached max jokes
+            if (gameState.rated >= gameState.maxJokes) {
+                endGame();
+            } else {
+                setTimeout(() => getNextJoke(), 1500);
+            }
+        }
+
+        function updateScoreboard() {
+            document.getElementById('score').innerHTML = gameState.score;
+            document.getElementById('streak').innerHTML = gameState.streak;
+            document.getElementById('rated').innerHTML = gameState.rated;
+        }
+
+        function setGameMode(mode) {
+            gameState.gameMode = mode;
+            
+            // Update button active state
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show/hide relevant buttons
+            if (mode === 'rating') {
+                document.getElementById('rating-mode').style.display = 'grid';
+                document.getElementById('guess-mode').style.display = 'none';
+            } else {
+                document.getElementById('rating-mode').style.display = 'none';
+                document.getElementById('guess-mode').style.display = 'grid';
+            }
+            
+            // Get new joke
+            getNextJoke();
+        }
+
+        function endGame() {
+            document.getElementById('game-content').style.display = 'none';
+            document.getElementById('game-over').classList.add('show');
+            document.getElementById('finalScore').innerHTML = gameState.score;
+            document.getElementById('finalRated').innerHTML = gameState.rated;
+        }
+
+        // Initialize game
+        window.addEventListener('load', () => {
+            getNextJoke();
+        });
+    </script>
+</body>
+</html>
