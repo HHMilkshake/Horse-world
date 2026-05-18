@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🐴 Horse World - Simulation Game</title>
+    <title>🐴 Horse World - Adventure Game</title>
     <style>
         * {
             margin: 0;
@@ -25,7 +25,7 @@
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-            max-width: 900px;
+            max-width: 1100px;
             width: 100%;
             padding: 30px;
         }
@@ -46,7 +46,7 @@
 
         .game-wrapper {
             display: grid;
-            grid-template-columns: 1fr 300px;
+            grid-template-columns: 1fr 320px;
             gap: 20px;
             margin-bottom: 20px;
         }
@@ -57,7 +57,7 @@
             border-radius: 15px;
             max-width: 100%;
             height: auto;
-            cursor: crosshair;
+            cursor: default;
             display: block;
         }
 
@@ -66,6 +66,8 @@
             border-radius: 15px;
             padding: 20px;
             border: 2px solid #1e3c72;
+            max-height: 600px;
+            overflow-y: auto;
         }
 
         .panel-title {
@@ -82,7 +84,7 @@
             flex-direction: column;
             gap: 10px;
             margin-bottom: 20px;
-            max-height: 200px;
+            max-height: 150px;
             overflow-y: auto;
         }
 
@@ -109,18 +111,13 @@
 
         .horse-name {
             font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .horse-emoji {
-            font-size: 1.5em;
-            margin-right: 5px;
+            margin-bottom: 3px;
         }
 
         .action-buttons {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: 1fr;
+            gap: 8px;
             margin-bottom: 20px;
         }
 
@@ -131,16 +128,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 0.9em;
-        }
-
-        .btn-primary {
-            background: #2a5298;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1e3c72;
+            font-size: 0.85em;
         }
 
         .btn-success {
@@ -164,11 +152,19 @@
         .btn-info {
             background: #2196F3;
             color: white;
-            grid-column: 1 / -1;
         }
 
         .btn-info:hover {
             background: #0b7dda;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #da190b;
         }
 
         .stats {
@@ -183,7 +179,7 @@
             display: flex;
             justify-content: space-between;
             margin: 8px 0;
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
 
         .stat-label {
@@ -192,21 +188,47 @@
         }
 
         .stat-bar {
-            width: 100px;
-            height: 12px;
+            width: 80px;
+            height: 10px;
             background: #e0e0e0;
-            border-radius: 6px;
+            border-radius: 5px;
             overflow: hidden;
-            margin-left: 10px;
+            margin-left: 8px;
             flex: 1;
-            max-width: 120px;
+            max-width: 100px;
         }
 
         .stat-fill {
             height: 100%;
             background: linear-gradient(90deg, #4CAF50, #8BC34A);
             width: 100%;
-            border-radius: 6px;
+            border-radius: 5px;
+        }
+
+        .rider-info {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #856404;
+        }
+
+        .auto-movement {
+            background: #e3f2fd;
+            border: 1px solid #2196F3;
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.9em;
+            color: #1e3c72;
+        }
+
+        .auto-movement.active {
+            background: #c8e6c9;
+            border-color: #4CAF50;
+            color: #2e7d32;
         }
 
         .instructions {
@@ -227,6 +249,7 @@
         .instructions ul {
             margin-left: 20px;
             line-height: 1.6;
+            font-size: 0.9em;
         }
 
         .feedback {
@@ -242,6 +265,26 @@
             align-items: center;
             justify-content: center;
             font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        .speedometer {
+            margin-top: 10px;
+            padding: 10px;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .speed-label {
+            font-size: 0.8em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .speed-slider {
+            width: 100%;
+            cursor: pointer;
         }
 
         @media (max-width: 768px) {
@@ -253,42 +296,54 @@
                 font-size: 2em;
             }
 
-            .action-buttons {
-                grid-template-columns: 1fr;
-            }
-
-            .action-buttons button {
-                width: 100%;
+            .control-panel {
+                max-height: none;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🐴 Horse World</h1>
-        <p class="subtitle">A real-time horse simulation game</p>
+        <h1>🐴 Horse World Adventure</h1>
+        <p class="subtitle">Ride horses, explore, and have fun!</p>
 
         <div class="instructions">
             <h3>🎮 How to Play:</h3>
             <ul>
-                <li>👆 <strong>Click on the map</strong> to move your selected horse</li>
-                <li>🐴 <strong>Click a horse name</strong> on the right panel to select it</li>
-                <li>🍎 <strong>Use action buttons</strong> to Feed, Pet, or Rest your horse</li>
-                <li>👀 <strong>Watch the stats</strong> - horses need food, rest, and attention</li>
-                <li>⚡ <strong>Keep them happy!</strong> - lonely horses get sad</li>
+                <li>🐴 <strong>Pick a horse</strong> and click "Mount Rider" to get a stick person on it</li>
+                <li>🚴 <strong>Auto-Move</strong> - Horse runs around automatically! Adjust speed with slider</li>
+                <li>🛑 <strong>Stop Movement</strong> - Click to make the horse stop running</li>
+                <li>🍎 <strong>Feed, Pet, Rest</strong> - Keep your horse healthy and happy</li>
+                <li>👤 <strong>Dismount</strong> - Get the stick person off the horse</li>
+                <li>🎯 More features coming: racing, tricks, more riders!</li>
             </ul>
         </div>
 
         <div class="game-wrapper">
             <div>
-                <canvas id="gameCanvas" width="600" height="400"></canvas>
-                <div class="feedback" id="feedback">Click on horses or the map to start playing!</div>
+                <canvas id="gameCanvas" width="700" height="450"></canvas>
+                <div class="feedback" id="feedback">Select a horse and click "Mount Rider" to start!</div>
             </div>
             <div class="control-panel">
                 <div class="panel-title">🐴 Your Horses</div>
                 <div class="horse-list" id="horseList"></div>
                 
-                <div class="panel-title">⚙️ Actions</div>
+                <div class="panel-title">⚙️ Controls</div>
+                <div class="action-buttons">
+                    <button class="btn-info" onclick="mountRider()">👤 Mount Rider</button>
+                    <button class="btn-danger" onclick="dismountRider()">🚶 Dismount</button>
+                </div>
+
+                <div class="speedometer" id="speedometer" style="display: none;">
+                    <div class="speed-label">🏃 Speed: <span id="speedValue">3</span></div>
+                    <input type="range" min="1" max="8" value="3" class="speed-slider" id="speedSlider" onchange="updateSpeed()">
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn-success" id="autoMoveBtn" onclick="toggleAutoMove()" style="display: none;">▶️ Start Auto-Move</button>
+                    <button class="btn-warning" id="stopMoveBtn" onclick="stopAutoMove()" style="display: none;">⏸️ Stop</button>
+                </div>
+
                 <div class="action-buttons">
                     <button class="btn-success" onclick="actionFeed()">🍎 Feed</button>
                     <button class="btn-warning" onclick="actionPet()">🎉 Pet</button>
@@ -300,27 +355,37 @@
                     <div class="stat-row">
                         <span class="stat-label">Health:</span>
                         <div class="stat-bar">
-                            <div class="stat-fill" id="healthBar" style="width: 100%; background: #4CAF50;"></div>
+                            <div class="stat-fill" id="healthBar" style="width: 100%;"></div>
                         </div>
                     </div>
                     <div class="stat-row">
                         <span class="stat-label">Hunger:</span>
                         <div class="stat-bar">
-                            <div class="stat-fill" id="hungerBar" style="width: 30%; background: #FF9800;"></div>
+                            <div class="stat-fill" id="hungerBar" style="width: 30%;"></div>
                         </div>
                     </div>
                     <div class="stat-row">
                         <span class="stat-label">Energy:</span>
                         <div class="stat-bar">
-                            <div class="stat-fill" id="energyBar" style="width: 70%; background: #2196F3;"></div>
+                            <div class="stat-fill" id="energyBar" style="width: 70%;"></div>
                         </div>
                     </div>
                     <div class="stat-row">
                         <span class="stat-label">Happiness:</span>
                         <div class="stat-bar">
-                            <div class="stat-fill" id="happinessBar" style="width: 60%; background: #E91E63;"></div>
+                            <div class="stat-fill" id="happinessBar" style="width: 60%;"></div>
                         </div>
                     </div>
+                </div>
+
+                <div id="riderInfo" class="rider-info" style="display: none;">
+                    👤 <strong>Rider Mounted!</strong><br>
+                    Horse is moving automatically!
+                </div>
+
+                <div id="autoMoveStatus" class="auto-movement" style="display: none;">
+                    ▶️ <strong>Auto-Moving!</strong><br>
+                    Horse is exploring the world!
                 </div>
             </div>
         </div>
@@ -335,10 +400,13 @@
         const game = {
             horses: [],
             selectedHorse: null,
-            time: 0
+            time: 0,
+            autoMove: false,
+            autoMoveSpeed: 3,
+            autoMoveDirection: Math.random() * Math.PI * 2
         };
 
-        // Horse class - using emoji style
+        // Horse class
         class Horse {
             constructor(x, y, name, color) {
                 this.x = x;
@@ -351,30 +419,41 @@
                 this.happiness = 60;
                 this.targetX = x;
                 this.targetY = y;
-                this.speed = 2;
+                this.speed = 0;
                 this.size = 35;
                 this.tailWave = 0;
+                this.hasRider = false;
+                this.riderColor = '#FF6B6B';
             }
 
             update() {
-                // Movement
-                const dx = this.targetX - this.x;
-                const dy = this.targetY - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+                // Auto movement
+                if (game.autoMove && this.hasRider) {
+                    this.speed = game.autoMoveSpeed * 0.5;
+                    
+                    // Randomly change direction occasionally
+                    if (Math.random() < 0.02) {
+                        game.autoMoveDirection += (Math.random() - 0.5) * Math.PI * 0.5;
+                    }
 
-                if (distance > this.speed) {
-                    this.x += (dx / distance) * this.speed;
-                    this.y += (dy / distance) * this.speed;
-                    this.energy -= 0.05;
+                    this.x += Math.cos(game.autoMoveDirection) * this.speed;
+                    this.y += Math.sin(game.autoMoveDirection) * this.speed;
+
+                    // Bounce off walls
+                    if (this.x < 50) { this.x = 50; game.autoMoveDirection = Math.PI - game.autoMoveDirection; }
+                    if (this.x > 650) { this.x = 650; game.autoMoveDirection = Math.PI - game.autoMoveDirection; }
+                    if (this.y < 50) { this.y = 50; game.autoMoveDirection = -game.autoMoveDirection; }
+                    if (this.y > 400) { this.y = 400; game.autoMoveDirection = -game.autoMoveDirection; }
+
+                    this.energy -= 0.1; // Auto moving uses more energy
                 } else {
-                    this.x = this.targetX;
-                    this.y = this.targetY;
+                    this.speed = 0;
                 }
 
                 // Stat changes over time
-                this.hunger = Math.min(100, this.hunger + 0.01);
-                this.energy = Math.max(0, this.energy - 0.02);
-                this.happiness = Math.max(0, this.happiness - 0.015);
+                this.hunger = Math.min(100, this.hunger + 0.008);
+                this.energy = Math.max(0, this.energy - 0.01);
+                this.happiness = Math.max(0, this.happiness - 0.01);
 
                 // Health affected by other stats
                 const avgStats = (this.hunger + (100 - this.energy) + (100 - this.happiness)) / 3;
@@ -395,9 +474,7 @@
                 // Back legs
                 ctx.fillStyle = this.color;
                 ctx.globalAlpha = 0.7;
-                // Back left leg
                 ctx.fillRect(this.x + this.size * 0.15, this.y + this.size * 0.35, this.size * 0.08, this.size * 0.4);
-                // Back right leg
                 ctx.fillRect(this.x + this.size * 0.35, this.y + this.size * 0.35, this.size * 0.08, this.size * 0.4);
                 ctx.globalAlpha = 1;
 
@@ -444,7 +521,7 @@
                 ctx.fill();
 
                 // Mane
-                ctx.fillStyle = this.adjustColor(this.color, 0.7);
+                ctx.fillStyle = this.color;
                 for (let i = 0; i < 4; i++) {
                     ctx.beginPath();
                     const maneX = this.x - this.size * 0.2 + (i * this.size * 0.12);
@@ -472,10 +549,55 @@
 
                 // Front legs
                 ctx.fillStyle = this.color;
-                // Front left leg
                 ctx.fillRect(this.x - this.size * 0.2, this.y + this.size * 0.3, this.size * 0.08, this.size * 0.4);
-                // Front right leg
                 ctx.fillRect(this.x - this.size * 0.05, this.y + this.size * 0.3, this.size * 0.08, this.size * 0.4);
+
+                // RIDER - Stick person on the horse
+                if (this.hasRider) {
+                    const riderX = this.x + this.size * 0.1;
+                    const riderY = this.y - this.size * 0.5;
+
+                    ctx.strokeStyle = this.riderColor;
+                    ctx.fillStyle = this.riderColor;
+                    ctx.lineWidth = 2;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+
+                    // Head
+                    ctx.beginPath();
+                    ctx.arc(riderX, riderY - 8, 5, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Body
+                    ctx.beginPath();
+                    ctx.moveTo(riderX, riderY + 2);
+                    ctx.lineTo(riderX, riderY + 15);
+                    ctx.stroke();
+
+                    // Left arm
+                    ctx.beginPath();
+                    ctx.moveTo(riderX, riderY + 5);
+                    ctx.lineTo(riderX - 8, riderY + 2);
+                    ctx.stroke();
+
+                    // Right arm
+                    ctx.beginPath();
+                    ctx.moveTo(riderX, riderY + 5);
+                    ctx.lineTo(riderX + 8, riderY + 2);
+                    ctx.stroke();
+
+                    // Left leg
+                    ctx.beginPath();
+                    ctx.moveTo(riderX, riderY + 15);
+                    ctx.lineTo(riderX - 5, riderY + 25);
+                    ctx.stroke();
+
+                    // Right leg
+                    ctx.beginPath();
+                    ctx.moveTo(riderX, riderY + 15);
+                    ctx.lineTo(riderX + 5, riderY + 25);
+                    ctx.stroke();
+                }
 
                 // Selection ring
                 if (game.selectedHorse === this) {
@@ -487,12 +609,6 @@
                 }
 
                 ctx.restore();
-            }
-
-            adjustColor(color, factor) {
-                const num = parseInt(color.replace("#", ""), 16);
-                const amt = Math.round(2.55 * factor);
-                return "#" + (((num >> 16) + amt) | ((num >> 8 & 0x00FF) + amt) | (0x0000FF + amt)).toString(16).substring(1);
             }
 
             feed() {
@@ -513,12 +629,11 @@
 
         // Initialize game
         function init() {
-            // Create starting horses with beautiful colors
             game.horses = [
-                new Horse(100, 120, 'Sunny', '#F4A460'),      // Sandy brown
-                new Horse(300, 180, 'Storm', '#2F4F4F'),      // Dark slate gray
-                new Horse(450, 220, 'Rose', '#FF69B4'),       // Hot pink
-                new Horse(200, 320, 'Bolt', '#8B4513')        // Saddle brown
+                new Horse(100, 120, 'Sunny', '#F4A460'),
+                new Horse(300, 180, 'Storm', '#2F4F4F'),
+                new Horse(450, 220, 'Rose', '#FF69B4'),
+                new Horse(200, 320, 'Bolt', '#8B4513')
             ];
 
             game.selectedHorse = game.horses[0];
@@ -534,11 +649,9 @@
             game.horses.forEach(horse => {
                 const div = document.createElement('div');
                 div.className = 'horse-item' + (horse === game.selectedHorse ? ' selected' : '');
+                const riderIcon = horse.hasRider ? ' 👤' : '';
                 div.innerHTML = `
-                    <div class="horse-name">
-                        <span class="horse-emoji" style="filter: hue-rotate(${getHueRotation(horse.color)}deg)">🐎</span>
-                        ${horse.name}
-                    </div>
+                    <div class="horse-name">${horse.name}${riderIcon}</div>
                     <div style="font-size: 0.8em; color: #666;">❤️ ${Math.round(horse.health)}% | 🍎 ${Math.round(horse.hunger)}%</div>
                 `;
                 div.onclick = () => selectHorse(horse);
@@ -546,18 +659,90 @@
             });
         }
 
-        function getHueRotation(color) {
-            // Rough approximation for emoji coloring
-            const num = parseInt(color.replace("#", ""), 16);
-            return Math.round((num % 360));
-        }
-
         // Select horse
         function selectHorse(horse) {
             game.selectedHorse = horse;
             updateHorseList();
             updateStats();
-            feedback.textContent = `Selected ${horse.name}! Click the map to move them.`;
+            updateUIForRider();
+            feedback.textContent = `Selected ${horse.name}!`;
+        }
+
+        // Mount rider
+        function mountRider() {
+            if (!game.selectedHorse) {
+                feedback.textContent = 'Select a horse first!';
+                return;
+            }
+            if (game.selectedHorse.hasRider) {
+                feedback.textContent = `${game.selectedHorse.name} already has a rider!`;
+                return;
+            }
+            game.selectedHorse.hasRider = true;
+            game.autoMove = false;
+            feedback.textContent = `👤 Rider mounted on ${game.selectedHorse.name}!`;
+            updateHorseList();
+            updateUIForRider();
+        }
+
+        // Dismount rider
+        function dismountRider() {
+            if (!game.selectedHorse || !game.selectedHorse.hasRider) {
+                feedback.textContent = 'No rider to dismount!';
+                return;
+            }
+            game.selectedHorse.hasRider = false;
+            game.autoMove = false;
+            feedback.textContent = `👤 Rider dismounted from ${game.selectedHorse.name}`;
+            updateHorseList();
+            updateUIForRider();
+        }
+
+        // Toggle auto move
+        function toggleAutoMove() {
+            if (!game.selectedHorse || !game.selectedHorse.hasRider) {
+                feedback.textContent = 'Mount a rider first!';
+                return;
+            }
+            game.autoMove = !game.autoMove;
+            updateUIForRider();
+            if (game.autoMove) {
+                feedback.textContent = `🏃 ${game.selectedHorse.name} is running!`;
+            }
+        }
+
+        // Stop auto move
+        function stopAutoMove() {
+            game.autoMove = false;
+            feedback.textContent = '⏸️ Movement stopped';
+            updateUIForRider();
+        }
+
+        // Update speed
+        function updateSpeed() {
+            game.autoMoveSpeed = parseInt(document.getElementById('speedSlider').value);
+            document.getElementById('speedValue').textContent = game.autoMoveSpeed;
+        }
+
+        // Update UI for rider
+        function updateUIForRider() {
+            if (game.selectedHorse && game.selectedHorse.hasRider) {
+                document.getElementById('speedometer').style.display = 'block';
+                document.getElementById('autoMoveBtn').style.display = 'block';
+                document.getElementById('stopMoveBtn').style.display = 'block';
+                document.getElementById('riderInfo').style.display = 'block';
+                if (game.autoMove) {
+                    document.getElementById('autoMoveStatus').style.display = 'block';
+                } else {
+                    document.getElementById('autoMoveStatus').style.display = 'none';
+                }
+            } else {
+                document.getElementById('speedometer').style.display = 'none';
+                document.getElementById('autoMoveBtn').style.display = 'none';
+                document.getElementById('stopMoveBtn').style.display = 'none';
+                document.getElementById('riderInfo').style.display = 'none';
+                document.getElementById('autoMoveStatus').style.display = 'none';
+            }
         }
 
         // Update stats panel
@@ -606,22 +791,6 @@
             updateStats();
         }
 
-        // Canvas click handler
-        canvas.addEventListener('click', (e) => {
-            if (!game.selectedHorse) {
-                feedback.textContent = 'Select a horse first!';
-                return;
-            }
-
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-
-            game.selectedHorse.targetX = x;
-            game.selectedHorse.targetY = y;
-            feedback.textContent = `${game.selectedHorse.name} is moving to the destination! 🐴`;
-        });
-
         // Game loop
         function gameLoop() {
             // Clear canvas
@@ -630,7 +799,22 @@
 
             // Draw grass
             ctx.fillStyle = '#90EE90';
-            ctx.fillRect(0, canvas.height * 0.6, canvas.width, canvas.height * 0.4);
+            ctx.fillRect(0, canvas.height * 0.65, canvas.width, canvas.height * 0.35);
+
+            // Draw trees/obstacles
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(50, 50, 30, 80);
+            ctx.fillStyle = '#228B22';
+            ctx.beginPath();
+            ctx.arc(65, 40, 25, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(600, 100, 30, 80);
+            ctx.fillStyle = '#228B22';
+            ctx.beginPath();
+            ctx.arc(615, 90, 25, 0, Math.PI * 2);
+            ctx.fill();
 
             // Update and draw horses
             game.horses.forEach(horse => {
@@ -642,7 +826,6 @@
             updateHorseList();
             updateStats();
 
-            // Continue loop
             requestAnimationFrame(gameLoop);
         }
 
