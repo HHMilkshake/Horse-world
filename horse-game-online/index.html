@@ -112,13 +112,9 @@
             margin-bottom: 5px;
         }
 
-        .horse-color {
-            display: inline-block;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        .horse-emoji {
+            font-size: 1.5em;
             margin-right: 5px;
-            vertical-align: middle;
         }
 
         .action-buttons {
@@ -339,18 +335,16 @@
         const game = {
             horses: [],
             selectedHorse: null,
-            time: 0,
-            terrain: []
+            time: 0
         };
 
-        // Horse class with beautiful drawing
+        // Horse class - using emoji style
         class Horse {
-            constructor(x, y, name, color, maneColor) {
+            constructor(x, y, name, color) {
                 this.x = x;
                 this.y = y;
                 this.name = name;
                 this.color = color;
-                this.maneColor = maneColor;
                 this.health = 100;
                 this.hunger = 30;
                 this.energy = 70;
@@ -358,7 +352,7 @@
                 this.targetX = x;
                 this.targetY = y;
                 this.speed = 2;
-                this.size = 25;
+                this.size = 35;
                 this.tailWave = 0;
             }
 
@@ -398,121 +392,107 @@
             draw() {
                 ctx.save();
 
-                // Legs
-                ctx.strokeStyle = this.color;
-                ctx.lineWidth = 4;
-                ctx.lineCap = 'round';
-                
-                // Front left leg
-                ctx.beginPath();
-                ctx.moveTo(this.x - this.size * 0.3, this.y + this.size * 0.5);
-                ctx.lineTo(this.x - this.size * 0.3, this.y + this.size * 0.9);
-                ctx.stroke();
-                
-                // Front right leg
-                ctx.beginPath();
-                ctx.moveTo(this.x - this.size * 0.05, this.y + this.size * 0.5);
-                ctx.lineTo(this.x - this.size * 0.05, this.y + this.size * 0.9);
-                ctx.stroke();
-                
+                // Back legs
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = 0.7;
                 // Back left leg
-                ctx.beginPath();
-                ctx.moveTo(this.x + this.size * 0.25, this.y + this.size * 0.5);
-                ctx.lineTo(this.x + this.size * 0.25, this.y + this.size * 0.9);
-                ctx.stroke();
-                
+                ctx.fillRect(this.x + this.size * 0.15, this.y + this.size * 0.35, this.size * 0.08, this.size * 0.4);
                 // Back right leg
-                ctx.beginPath();
-                ctx.moveTo(this.x + this.size * 0.5, this.y + this.size * 0.5);
-                ctx.lineTo(this.x + this.size * 0.5, this.y + this.size * 0.9);
-                ctx.stroke();
+                ctx.fillRect(this.x + this.size * 0.35, this.y + this.size * 0.35, this.size * 0.08, this.size * 0.4);
+                ctx.globalAlpha = 1;
 
-                // Tail with wave animation
-                ctx.strokeStyle = this.maneColor;
-                ctx.lineWidth = 5;
+                // Tail with wave
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = this.size * 0.15;
                 ctx.lineCap = 'round';
-                const tailX = this.x + this.size * 0.6;
-                const tailY = this.y + this.size * 0.3;
-                const tailWaveAmount = Math.sin(this.tailWave) * 15;
+                const tailBaseX = this.x + this.size * 0.48;
+                const tailBaseY = this.y + this.size * 0.1;
+                const tailWaveAmount = Math.sin(this.tailWave) * 20;
                 
                 ctx.beginPath();
-                ctx.moveTo(tailX, tailY);
+                ctx.moveTo(tailBaseX, tailBaseY);
                 ctx.quadraticCurveTo(
-                    tailX + tailWaveAmount + 10, 
-                    tailY + 20, 
-                    tailX + tailWaveAmount, 
-                    tailY + 40
+                    tailBaseX + tailWaveAmount + 15,
+                    tailBaseY + this.size * 0.25,
+                    tailBaseX + tailWaveAmount,
+                    tailBaseY + this.size * 0.5
                 );
                 ctx.stroke();
 
                 // Body
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.ellipse(this.x, this.y, this.size * 0.8, this.size * 0.6, 0, 0, Math.PI * 2);
+                ctx.ellipse(this.x + this.size * 0.15, this.y, this.size * 0.35, this.size * 0.32, 0, 0, Math.PI * 2);
                 ctx.fill();
-
-                // Mane
-                ctx.fillStyle = this.maneColor;
-                for (let i = 0; i < 5; i++) {
-                    ctx.beginPath();
-                    ctx.arc(
-                        this.x - this.size * 0.4 + (i * this.size * 0.2),
-                        this.y - this.size * 0.5,
-                        this.size * 0.15,
-                        0,
-                        Math.PI * 2
-                    );
-                    ctx.fill();
-                }
 
                 // Neck
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.ellipse(this.x - this.size * 0.35, this.y - this.size * 0.1, this.size * 0.3, this.size * 0.5, 0.3, 0, Math.PI * 2);
+                ctx.ellipse(this.x - this.size * 0.15, this.y - this.size * 0.1, this.size * 0.22, this.size * 0.35, 0.4, 0, Math.PI * 2);
                 ctx.fill();
 
                 // Head
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.ellipse(this.x - this.size * 0.5, this.y - this.size * 0.6, this.size * 0.45, this.size * 0.5, 0, 0, Math.PI * 2);
+                ctx.ellipse(this.x - this.size * 0.3, this.y - this.size * 0.25, this.size * 0.28, this.size * 0.32, 0, 0, Math.PI * 2);
                 ctx.fill();
 
                 // Snout
                 ctx.fillStyle = this.color;
                 ctx.beginPath();
-                ctx.ellipse(this.x - this.size * 0.7, this.y - this.size * 0.5, this.size * 0.25, this.size * 0.3, 0, 0, Math.PI * 2);
+                ctx.ellipse(this.x - this.size * 0.52, this.y - this.size * 0.15, this.size * 0.18, this.size * 0.2, 0, 0, Math.PI * 2);
                 ctx.fill();
+
+                // Mane
+                ctx.fillStyle = this.adjustColor(this.color, 0.7);
+                for (let i = 0; i < 4; i++) {
+                    ctx.beginPath();
+                    const maneX = this.x - this.size * 0.2 + (i * this.size * 0.12);
+                    const maneY = this.y - this.size * 0.35 - (i % 2) * this.size * 0.05;
+                    ctx.arc(maneX, maneY, this.size * 0.12, 0, Math.PI * 2);
+                    ctx.fill();
+                }
 
                 // Eyes
                 ctx.fillStyle = 'white';
                 ctx.beginPath();
-                ctx.arc(this.x - this.size * 0.65, this.y - this.size * 0.75, this.size * 0.12, 0, Math.PI * 2);
+                ctx.arc(this.x - this.size * 0.4, this.y - this.size * 0.3, this.size * 0.11, 0, Math.PI * 2);
                 ctx.fill();
 
                 ctx.fillStyle = 'black';
                 ctx.beginPath();
-                ctx.arc(this.x - this.size * 0.65, this.y - this.size * 0.75, this.size * 0.06, 0, Math.PI * 2);
+                ctx.arc(this.x - this.size * 0.4, this.y - this.size * 0.3, this.size * 0.06, 0, Math.PI * 2);
                 ctx.fill();
 
                 // Nostrils
                 ctx.fillStyle = '#333';
                 ctx.beginPath();
-                ctx.arc(this.x - this.size * 0.8, this.y - this.size * 0.48, 2, 0, Math.PI * 2);
+                ctx.arc(this.x - this.size * 0.58, this.y - this.size * 0.15, this.size * 0.05, 0, Math.PI * 2);
                 ctx.fill();
-                ctx.beginPath();
-                ctx.arc(this.x - this.size * 0.8, this.y - this.size * 0.42, 2, 0, Math.PI * 2);
-                ctx.fill();
+
+                // Front legs
+                ctx.fillStyle = this.color;
+                // Front left leg
+                ctx.fillRect(this.x - this.size * 0.2, this.y + this.size * 0.3, this.size * 0.08, this.size * 0.4);
+                // Front right leg
+                ctx.fillRect(this.x - this.size * 0.05, this.y + this.size * 0.3, this.size * 0.08, this.size * 0.4);
 
                 // Selection ring
                 if (game.selectedHorse === this) {
                     ctx.strokeStyle = '#FF0000';
                     ctx.lineWidth = 3;
                     ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size + 15, 0, Math.PI * 2);
+                    ctx.arc(this.x + this.size * 0.1, this.y, this.size + 15, 0, Math.PI * 2);
                     ctx.stroke();
                 }
 
                 ctx.restore();
+            }
+
+            adjustColor(color, factor) {
+                const num = parseInt(color.replace("#", ""), 16);
+                const amt = Math.round(2.55 * factor);
+                return "#" + (((num >> 16) + amt) | ((num >> 8 & 0x00FF) + amt) | (0x0000FF + amt)).toString(16).substring(1);
             }
 
             feed() {
@@ -533,12 +513,12 @@
 
         // Initialize game
         function init() {
-            // Create starting horses with better colors
+            // Create starting horses with beautiful colors
             game.horses = [
-                new Horse(100, 100, 'Sunny', '#FFD700', '#FFA500'),      // Gold with orange mane
-                new Horse(300, 150, 'Storm', '#696969', '#2F4F4F'),       // Gray with dark teal mane
-                new Horse(400, 300, 'Rose', '#FFB6C1', '#FF69B4'),        // Light pink with hot pink mane
-                new Horse(200, 350, 'Bolt', '#8B4513', '#D2691E')         // Saddle brown with chocolate mane
+                new Horse(100, 120, 'Sunny', '#F4A460'),      // Sandy brown
+                new Horse(300, 180, 'Storm', '#2F4F4F'),      // Dark slate gray
+                new Horse(450, 220, 'Rose', '#FF69B4'),       // Hot pink
+                new Horse(200, 320, 'Bolt', '#8B4513')        // Saddle brown
             ];
 
             game.selectedHorse = game.horses[0];
@@ -556,7 +536,7 @@
                 div.className = 'horse-item' + (horse === game.selectedHorse ? ' selected' : '');
                 div.innerHTML = `
                     <div class="horse-name">
-                        <span class="horse-color" style="background-color: ${horse.color}"></span>
+                        <span class="horse-emoji" style="filter: hue-rotate(${getHueRotation(horse.color)}deg)">🐎</span>
                         ${horse.name}
                     </div>
                     <div style="font-size: 0.8em; color: #666;">❤️ ${Math.round(horse.health)}% | 🍎 ${Math.round(horse.hunger)}%</div>
@@ -564,6 +544,12 @@
                 div.onclick = () => selectHorse(horse);
                 horseList.appendChild(div);
             });
+        }
+
+        function getHueRotation(color) {
+            // Rough approximation for emoji coloring
+            const num = parseInt(color.replace("#", ""), 16);
+            return Math.round((num % 360));
         }
 
         // Select horse
